@@ -1,7 +1,8 @@
 const config = require('config')
 const express = require('express')
 const passport = require('passport')
-const { createBounty, updateBounty } = require('./../gitrewards')
+const { Bifrost, Bounty } = require('practice')
+const { createBounty, updateBounty, commentIssue } = require('./../gitrewards')
 const router = express.Router()
 const GitHubStrategy = require('passport-github').Strategy
 
@@ -69,7 +70,28 @@ router.get('/auth/github/callback',
   }
 )
 
-router.get('/logout', (req, res, next) => {
+router.post('/bifrost/', (req, res) => {
+  const { amount, from, metadata } = Bifrost.ethereumCallback(req.body)
+  const message = "Account `" + from + "` deposited `" + amount + " ETH`"
+  const data = { installId: metadata.install_id, issueNumber: metadata.issue_number, repo: metadata.repo, message }
+
+  commentIssue(data).then(res.send('OK'))
+})
+
+router.post('/stellar/', (req, res) => {
+  const { from, amount, url, assetCode } = Bifrost.stellarCallback(req.body)
+  const currency = (assetCode) ? assetCode : "XLM"
+  const message = "Account `" + from + "` deposited `" + amount + " " + currency + "` "
+
+  Bounty.metadata(url).then(metadata => {
+    const meta = JSON.parse(metadata)
+    const data = { ...meta, message }
+
+    return commentIssue(data)
+  }).then(res.send('OK'))
+})
+
+router.get('/logout', (req, res) => {
   req.session.destroy()
   req.logout()
 

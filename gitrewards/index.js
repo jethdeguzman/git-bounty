@@ -13,23 +13,28 @@ const githubApi = new GithubApi(APP_ID, APP_PRIVATE_KEY)
 module.exports = {
   createBounty ({ issue, repo, installId }) {
     return new Promise((resolve) => {
-      const url = `https://github.com/${repo.owner}/${repo.name}/issues/${issue.number}`
-      const meta = JSON.stringify({ avatarUrl: issue.user.avatar_url })
+      const meta = JSON.stringify({ avatarUrl: issue.user.avatar_url, installId, repo, issueNumber: issue.number })
 
-      console.log()
-      Bounty.create(url, meta).then(address => {
+      Bounty.create(issue.id.toString(), meta).then(address => {
         const eth = { address }
-        const stellar = { address: Stellar.address(), memo: url }
+        const stellar = { address: Stellar.address(), memo: issue.id.toString() }
 
         return { eth, stellar }
       }).then(({ eth, stellar }) => {
         const message = messages['NEW_BOUNTY'](eth, stellar)
+        const meta = {
+          issueNumber: issue.number,
+          installId,
+          repo
+        }
 
-        return Promise.all(
+        console.log()
+        console.log(eth.address)
+        return Promise.all([
           githubApi.commentIssue(installId, repo, issue.number, message),
-          Bifrost.ethereumWebhook(eth.address, {})
-        )
-      }).then(([g, b]) => { resolve(true) })
+          Bifrost.ethereumWebhook(eth.address, meta)
+        ])
+      }).then(resolve(true))
     })
   },
 
@@ -50,5 +55,14 @@ module.exports = {
           resolve(issueNumber)
         })
     })
+  },
+
+  commentIssue ({ installId, repo, issueNumber, message }) {
+    return new Promise((resolve) => {
+      githubApi
+        .commentIssue(installId, repo, issueNumber, message)
+        .then(resolve(true))
+    })
+
   }
 }
