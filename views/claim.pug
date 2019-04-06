@@ -1,9 +1,14 @@
 extends layout
 
 block content
-  form(method='post' action='/bounty/address/claim/eth')
-    img(src= `${avatarUrl}` width="40")
-    h4 #{username}
+  form(method='post' action='/bounty/'+issueId+'/claim/eth')
+    h5 Claim your #{bounty[0].balance} ETH
     label Eth Address:
-    input(type='text' name='eth-address')
+    input(type='text' name='ethAddress')
+    input(type='submit')
+
+  form(method='post' action='/bounty/'+issueId+'/claim/stellar')
+    h5 Claim your #{bounty[1].amount} XLM and #{bounty[2].amount} PHP
+    label Stellar Address:
+    input(type='text' name='stellarAddress')
     input(type='submit')

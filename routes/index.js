@@ -56,7 +56,8 @@ router.get('/bounty/:issueId/claim', (req, res, next) => {
         StellarAsset.query(issueId, assetIssuer, assetCode)
       ])
       .then(values => {
-        res.render('claim', { username: user.username, avatarUrl: user._json.avatar_url, bounty: values })
+        console.log(values)
+        res.render('claim', { issueId: issueId, username: user.username, avatarUrl: user._json.avatar_url, bounty: values })
       })
   } else {
     const oauthConfig = config.get('Github.oauth')
@@ -75,6 +76,31 @@ router.get('/bounty/:issueId/claim', (req, res, next) => {
 })
 
 router.post('/bounty/:issueId/claim/eth', (req, res) => {
+  const { issueId } = req.params
+  const { username } = req.session.passport.user
+  const { ethAddress } = req.body
+
+  Bounty.claimReward(issueId, username, ethAddress)
+    .then(txHash => {
+      console.log(txHash)
+      res.redirect(`/bounty/${issueId}/claim`)
+    })
+})
+
+router.post('/bounty/:issueId/claim/stellar', (req, res) => {
+  const { issueId } = req.params
+  const { stellarAddress } = req.body
+  
+  Promise.all([
+    Stellar.claimReward(stellarAddress),
+    StellarAsset.claimReward(stellarAddress)
+  ]).then(values => {
+    console.log(values)
+    res.redirect(`/bounty/${issueId}/claim`)
+  }).catch(error => {
+    console.log(error)
+    res.redirect(`/bounty/${issueId}/claim`)
+  })
 })
 
 router.get('/auth/github/callback',
