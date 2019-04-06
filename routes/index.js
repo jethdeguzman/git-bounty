@@ -1,7 +1,7 @@
 const config = require('config')
 const express = require('express')
 const passport = require('passport')
-const { Bifrost, Bounty } = require('practice')
+const { Bifrost, Bounty, Stellar, StellarAsset } = require('practice')
 const { createBounty, updateBounty, commentIssue } = require('./../gitrewards')
 const router = express.Router()
 const GitHubStrategy = require('passport-github').Strategy
@@ -42,11 +42,22 @@ router.post('/webhook/github', (req, res) => {
   }
 })
 
-router.get('/rewards/:address/claim', (req, res, next) => {
+router.get('/bounty/:issueId/claim', (req, res, next) => {
   if (req.session && req.session.passport) {
     const user = req.session.passport.user
-    res.render('claim', { username: user.username, avatarUrl: user._json.avatar_url })
+    const issueId = req.params.issueId
+    const assetIssuer = "GBS5X4YFRXX6V6P4RAMSFUEZOLCCF3HWBWRCGHYIWXHK7R4PMFCOS5XB"
+    const assetCode = "PHP"
 
+    Promise
+      .all([
+        Bounty.query(issueId),
+        Stellar.query(issueId),
+        StellarAsset.query(issueId, assetIssuer, assetCode)
+      ])
+      .then(values => {
+        res.render('claim', { username: user.username, avatarUrl: user._json.avatar_url, bounty: values })
+      })
   } else {
     const oauthConfig = config.get('Github.oauth')
     const nextUrl = `http://localhost:3000${req.originalUrl}`
@@ -61,6 +72,9 @@ router.get('/rewards/:address/claim', (req, res, next) => {
 
     return passport.authenticate('github')(req, res, next)
   }
+})
+
+router.post('/bounty/:issueId/claim/eth', (req, res) => {
 })
 
 router.get('/auth/github/callback',

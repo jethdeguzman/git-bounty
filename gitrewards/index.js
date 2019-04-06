@@ -51,7 +51,7 @@ module.exports = {
         })
         .then(response => {
           const issue = response.data
-          const message = messages['BOUNTY_READY_TO_CLAIM']()
+          const message = messages['BOUNTY_READY_TO_CLAIM'](issue.id)
 
           return Promise.all([
             Bounty.addUsername(issue.id.toString(), pr.user.login),

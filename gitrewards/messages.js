@@ -12,8 +12,8 @@ module.exports = {
 
     return message
   },
-  'BOUNTY_READY_TO_CLAIM': () => {
-    let message = "Yay! The reward for this issue can now be claimed on this link http://localhost:3000/rewards/XXX-XXX-XXX/claim"
+  'BOUNTY_READY_TO_CLAIM': (issueId) => {
+    let message = "Yay! The reward for this issue can now be claimed on this [link](http://localhost:3000/bounty/" + issueId + "/claim)"
 
     return message
   }
