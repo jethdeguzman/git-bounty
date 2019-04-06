@@ -1,0 +1,12 @@
+{
+  "Github": {
+    "app": {
+      "id": 28480
+    },
+    "oauth": {
+      "id": "e863f2b37c735deb2ec4",
+      "secret": "fd4048a8a815f451440f75e54b7831987202f265",
+      "callbackUrl": "http://localhost:3000/auth/github/callback"
+    }
+  }
+}
