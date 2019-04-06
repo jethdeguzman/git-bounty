@@ -26,7 +26,7 @@ router.post('/webhook/github', (req, res) => {
   }
 
   if (issue && action == "opened") {
-    data = { ...data, issueNumber: issue.number }
+    data = { ...data, issue }
 
     createBounty(data).then(res.send('OK'))
 

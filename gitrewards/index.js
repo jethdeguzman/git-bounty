@@ -2,6 +2,7 @@ const config = require('config')
 const fs = require('fs')
 const path = require('path')
 const { GithubApi } = require('./../github')
+const { Bounty, Stellar, StellarAddress, Bifrost } = require('practice')
 const messages = require('./messages')
 
 const APP_ID = config.get('Github.app.id')
@@ -10,15 +11,25 @@ const APP_PRIVATE_KEY = fs.readFileSync(path.join(process.cwd(), 'keys/git-rewar
 const githubApi = new GithubApi(APP_ID, APP_PRIVATE_KEY)
 
 module.exports = {
-  createBounty ({ issueNumber, repo, installId }) {
-    // TODO: call smart contract create bounty
+  createBounty ({ issue, repo, installId }) {
+    return new Promise((resolve) => {
+      const url = `https://github.com/${repo.owner}/${repo.name}/issues/${issue.number}`
+      const meta = JSON.stringify({ avatarUrl: issue.user.avatar_url })
 
-    const message = messages['NEW_BOUNTY']()
+      console.log()
+      Bounty.create(url, meta).then(address => {
+        const eth = { address }
+        const stellar = { address: Stellar.address(), memo: url }
 
-    return new Promise((resolve) => {ss
-      githubApi
-        .commentIssue(installId, repo, issueNumber, message)
-        .then(resolve(true))
+        return { eth, stellar }
+      }).then(({ eth, stellar }) => {
+        const message = messages['NEW_BOUNTY'](eth, stellar)
+
+        return Promise.all(
+          githubApi.commentIssue(installId, repo, issue.number, message),
+          Bifrost.ethereumWebhook(eth.address, {})
+        )
+      }).then(([g, b]) => { resolve(true) })
     })
   },
 

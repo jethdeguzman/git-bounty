@@ -1,11 +1,13 @@
 module.exports = {
-  'NEW_BOUNTY': () => {
+  'NEW_BOUNTY': (eth, stellar) => {
     let message = ""
 
     message += "For **Funders**, you can now deposit reward amount on these addresses:\n"
-    message += "- **For ETH:** `XXXXXX`\n"
-    message += "- **For XLM:** Address: `XXXX`,  Memo: `test - memo`\n"
-    message += "- **For IOST:** Address: `XXXX`, Memo: `test - memo`\n\n"
+    message += "- **For ETH:** \n"
+    message += "Contract Address: `" + eth.address + "`\n"
+    message += "- **For XLM:** \n"
+    message += "Address: `" + stellar.address + "`\n"
+    message += "Memo: `" + stellar.memo + "`\n\n"
     message += "For **Developers**, you can now start working on this issue. Once you're done, submit a pull request and reference this issue on the description. e.g.`This fixes issue #1`"
 
     return message
