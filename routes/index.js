@@ -32,8 +32,8 @@ router.post('/webhook/github', (req, res) => {
     createBounty(data).then(res.send('OK'))
 
   } else if (pull_request && action == "closed") {
-    const { number, body } = pull_request
-    data = { ...data, pr: { number, body } }
+    const { number, body, user } = pull_request
+    data = { ...data, pr: { number, body, user } }
 
     updateBounty(data).then(res.send('OK'))
 
