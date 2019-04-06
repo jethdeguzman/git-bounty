@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  form(method='post' action='/rewards/address/claim')
+    img(src= `${avatarUrl}` width="40")
+    h4 #{username}
+    label Eth Address:
+    input(type='text' name='eth-address')
+    input(type='submit')
