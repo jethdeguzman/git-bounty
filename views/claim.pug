@@ -1,14 +1,60 @@
-extends layout
+doctype html
+head
+  meta(charset='utf-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1')
+  title Git Bounty
+  link(rel='icon' href='img/favicon.ico')
+  link(rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.2/css/uikit.min.css')
+  style.
+    html{
+      background: #fbfbfb;
+    }
+    .uk-container-small {
+      max-width: 47rem;
+    }
 
-block content
-  form(method='post' action='/bounty/'+issueId+'/claim/eth')
-    h5 Claim your #{bounty[0].balance} ETH
-    label Eth Address:
-    input(type='text' name='ethAddress')
-    input(type='submit')
+body
+  header(style='background-color: #fff; border-bottom: 1px solid #f2f2f2' data-uk-sticky='show-on-up: true; animation: uk-animation-slide-top')
+    .uk-container
+      nav#navbar(data-uk-navbar='mode: click;')
+        
+        .uk-navbar-center
+          a.uk-navbar-item.uk-logo(href='#', style='min-height: 52px;') Git Bounty
 
-  form(method='post' action='/bounty/'+issueId+'/claim/stellar')
-    h5 Claim your #{bounty[1].amount} XLM and #{bounty[2].amount} PHP
-    label Stellar Address:
-    input(type='text' name='stellarAddress')
-    input(type='submit')
+  section.uk-section.uk-section-small
+    #author-wrap.uk-container.uk-container-small.uk-card.uk-card-default(style="padding: 20px")
+      .uk-grid.uk-grid-medium.uk-flex.uk-flex-middle(data-uk-grid='')
+        .uk-width-auto
+          img.uk-border-circle(src=avatarUrl alt='' style='width:60px')
+        .uk-width-expand
+          h4.uk-margin-remove.uk-text-bold #{metadata.issueTitle}
+          span.uk-text-small ##{metadata.issueNumber} #{metadata.repo.owner}/#{metadata.repo.name} created by #{metadata.author}
+        .uk-width-auto
+          a.uk-button.uk-button-default.uk-button-small(target='_blank', uk-icon='github', href="https://github.com/"+metadata.repo.owner+"/"+metadata.repo.name+"/issues/"+metadata.issueNumber)  View issue 
+
+  .uk-container.uk-container-small
+    hr.uk-margin-remove
+
+  if valid
+    section.uk-section.uk-section-small
+      #author-wrap.uk-container.uk-container-small.uk-card.uk-card-default(style="padding: 25px")
+        form(method='post', action='/bounty/'+issueId+'/claim/eth')
+          fieldset.uk-fieldset
+            h4 Claim #{bounty[0].balance} ETH
+            .uk-margin(uk-margin='')
+              div(uk-form-custom='target: true')
+                input.uk-input.uk-form-width-medium(type='text'  name='ethAddress' placeholder='Ethereum Address' style='width: 596px;')
+              button.uk-button.uk-button-default(disabled=(bounty[0].balance == 0)) Send
+        
+        form(method='post', action='/bounty/'+issueId+'/claim/stellar')
+          fieldset.uk-fieldset
+            h4 Claim #{bounty[1].amount} XLM and #{bounty[2].amount} PHP
+            .uk-margin(uk-margin='')
+              div(uk-form-custom='target: true')
+                input.uk-input.uk-form-width-medium(type='text' name='stellarAddress' placeholder='Stellar Address' style='width: 596px;')
+              button.uk-button.uk-button-default(disabled=(bounty[1].amount == 0 && bounty[2].amount)) Send
+        
+
+
+script(src='https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.2/js/uikit.min.js')
+script(src='https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.2/js/uikit-icons.min.js')

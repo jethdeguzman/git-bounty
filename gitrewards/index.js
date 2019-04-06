@@ -14,7 +14,14 @@ const githubApi = new GithubApi(APP_ID, APP_PRIVATE_KEY)
 module.exports = {
   createBounty ({ issue, repo, installId }) {
     return new Promise((resolve) => {
-      const meta = JSON.stringify({ avatarUrl: issue.user.avatar_url, installId, repo, issueNumber: issue.number })
+      const meta = JSON.stringify({
+        installId,
+        repo,
+        avatarUrl: issue.user.avatar_url,
+        issueNumber: issue.number,
+        issueTitle: issue.title,
+        author: issue.user.login
+      })
 
       Bounty.create(issue.id.toString(), meta)
         .then(address => {
