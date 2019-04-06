@@ -3,11 +3,11 @@ const config = require('config')
 const fs = require('fs')
 const path = require('path')
 const { GithubApi } = require('./../github')
-const { Bounty, Stellar, StellarAddress, Bifrost } = require('practice')
+const { Bounty, Stellar, Bifrost } = require('practice')
 const messages = require('./messages')
 
 const APP_ID = config.get('Github.app.id')
-const APP_PRIVATE_KEY = fs.readFileSync(path.join(process.cwd(), 'keys/git-rewards.pem'))
+const APP_PRIVATE_KEY = fs.readFileSync(path.join(process.cwd(), config.get('Github.app.privateKeyPath')))
 
 const githubApi = new GithubApi(APP_ID, APP_PRIVATE_KEY)
 

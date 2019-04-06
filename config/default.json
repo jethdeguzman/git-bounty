@@ -1,11 +1,12 @@
 {
   "Github": {
     "app": {
-      "id": 28480
+      "id": 28503,
+      "privateKeyPath": "keys/git-bounty.pem"
     },
     "oauth": {
-      "id": "e863f2b37c735deb2ec4",
-      "secret": "fd4048a8a815f451440f75e54b7831987202f265",
+      "id": "2667c5b922ed5507cc36",
+      "secret": "1c3b655b9ea313e9ff5369434a22dab58c83f1e0",
       "callbackUrl": "http://localhost:3000/auth/github/callback"
     }
   }
