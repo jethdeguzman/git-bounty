@@ -85,6 +85,11 @@ router.get('/bounty/:issueId/claim', (req, res, next) => {
   }
 })
 
+router.get('/bounty/:issueId/success-claim', (req, res) => {
+  res.render('success', req.query)
+})
+
+
 router.post('/bounty/:issueId/claim/eth', (req, res) => {
   const { issueId } = req.params
   const { username } = req.session.passport.user
@@ -93,7 +98,7 @@ router.post('/bounty/:issueId/claim/eth', (req, res) => {
   Bounty.claimReward(issueId, username, ethAddress)
     .then(txHash => {
       console.log(txHash)
-      res.redirect(`/bounty/${issueId}/claim`)
+      res.redirect(`/bounty/${issueId}/success-claim?txHash=${txHash}&currency=ETH`)
     })
 })
 
@@ -101,16 +106,28 @@ router.post('/bounty/:issueId/claim/stellar', (req, res) => {
   const { issueId } = req.params
   const { stellarAddress } = req.body
 
-  Promise.all([
-    Stellar.claimReward(stellarAddress),
-    StellarAsset.claimReward(stellarAddress)
-  ]).then(values => {
-    console.log(values)
-    res.redirect(`/bounty/${issueId}/claim`)
-  }).catch(error => {
-    console.log(error)
-    res.redirect(`/bounty/${issueId}/claim`)
-  })
+  Stellar.claimReward(issueId, stellarAddress)
+    .then(txHash => {
+      console.log(txHash)
+      res.redirect(`/bounty/${issueId}/success-claim?txHash=${txHash}&currency=XLM`)
+    }).catch(error => {
+      console.log(error)
+      res.redirect(`/bounty/${issueId}/success-claim`)
+    })
+})
+
+router.post('/bounty/:issueId/claim/stellar-asset', (req, res) => {
+  const { issueId } = req.params
+  const { stellarAddress } = req.body
+
+  StellarAsset.claimReward(issueId, stellarAddress)
+    .then(txHash => {
+      console.log(txHash)
+      res.redirect(`/bounty/${issueId}/success-claim?txHash=${txHash}&currency=PHP`)
+    }).catch(error => {
+      console.log(error)
+      res.redirect(`/bounty/${issueId}/success-claim`)
+    })
 })
 
 router.get('/auth/github/callback',

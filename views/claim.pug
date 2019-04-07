@@ -48,11 +48,19 @@ body
         
         form(method='post', action='/bounty/'+issueId+'/claim/stellar')
           fieldset.uk-fieldset
-            h4 Claim #{bounty[1].amount} XLM and #{bounty[2].amount} PHP
+            h4 Claim #{bounty[1].amount} XLM
             .uk-margin(uk-margin='')
               div(uk-form-custom='target: true')
                 input.uk-input.uk-form-width-medium(type='text' name='stellarAddress' placeholder='Stellar Address' style='width: 596px;')
-              button.uk-button.uk-button-default(disabled=(bounty[1].amount == 0 && bounty[2].amount)) Send
+              button.uk-button.uk-button-default(disabled=(bounty[1].amount == 0)) Send
+        
+        form(method='post', action='/bounty/'+issueId+'/claim/stellar-asset')
+          fieldset.uk-fieldset
+            h4 Claim #{bounty[2].amount} PHP
+            .uk-margin(uk-margin='')
+              div(uk-form-custom='target: true')
+                input.uk-input.uk-form-width-medium(type='text' name='stellarAddress' placeholder='Stellar Address' style='width: 596px;')
+              button.uk-button.uk-button-default(disabled=(bounty[2].amount == 0)) Send
         
 
 
