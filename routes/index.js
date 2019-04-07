@@ -46,7 +46,7 @@ router.get('/bounty/:issueId/claim', (req, res, next) => {
   if (req.session && req.session.passport) {
     const user = req.session.passport.user
     const issueId = req.params.issueId
-    const assetIssuer = "GBS5X4YFRXX6V6P4RAMSFUEZOLCCF3HWBWRCGHYIWXHK7R4PMFCOS5XB"
+    const assetIssuer = "GADYDBUGM7VYJTWVQZUH7LJW6D2IQ6KJDEZ5ZASLZAHYSSNVZKDYXXVI"
     const assetCode = "PHP"
 
     Promise
@@ -56,10 +56,9 @@ router.get('/bounty/:issueId/claim', (req, res, next) => {
         StellarAsset.query(issueId, assetIssuer, assetCode)
       ])
       .then(values => {
-        // console.log(values)
+        console.log(values)
         const metadata = JSON.parse(values[0].metadata)
-        // const valid = user.username == values[0].username
-        const valid = true
+        const valid = user.username == values[0].username
         res.render('claim', {
           issueId: issueId,
           avatarUrl: user._json.avatar_url,
@@ -119,8 +118,10 @@ router.post('/bounty/:issueId/claim/stellar', (req, res) => {
 router.post('/bounty/:issueId/claim/stellar-asset', (req, res) => {
   const { issueId } = req.params
   const { stellarAddress } = req.body
+  const assetIssuer = "GADYDBUGM7VYJTWVQZUH7LJW6D2IQ6KJDEZ5ZASLZAHYSSNVZKDYXXVI"
+  const assetCode = "PHP"
 
-  StellarAsset.claimReward(issueId, stellarAddress)
+  StellarAsset.claimReward(issueId, stellarAddress, assetIssuer, assetCode)
     .then(txHash => {
       console.log(txHash)
       res.redirect(`/bounty/${issueId}/success-claim?txHash=${txHash}&currency=PHP`)
